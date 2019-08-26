@@ -1,13 +1,11 @@
-//display page
-function displayPage () {
-    $.get('/')
-}
+// //display page
+// function displayPage () {
+//     $.get('/')
+// }
 
-//post button
-$('#submit').on('click', () => {
-    $.ajax({
-        method: "POST",
-        url: "/api/survey" 
-      }).then(displayPage)
-      .catch((err) => { if (err) throw err; })
-})
+// //post button
+// $('#submit').on('click', () => {
+//     $.post("/survey/new")
+//     .then(displayPage)
+//     .catch((err) => { if (err) throw err; })
+// }); 

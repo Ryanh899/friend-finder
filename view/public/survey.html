@@ -8,6 +8,7 @@
     <title>Survey</title>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
@@ -23,7 +24,7 @@
     </div>
     <div class="container text-left">
         <div class="wrap">
-            <form method="POST" action="/survey/update">
+            <form method="POST" action="/api/new">
                 <label class="statement">What is your name?</label>
                 <input type="text" name="name" class="mb-5 ml-3">
 
@@ -239,13 +240,13 @@
                 </ul>
                 <div class="buttons">
                     <button class="clear btn btn-danger mb-4">Clear</button>
-                    <button formmethod="post" class="submit btn btn-primary mb-4" id="sumbit">Submit</button> 
+                    <button formmethod="POST" class="submit btn btn-primary mb-4" id="sumbit">Submit</button> 
                 </div>
             </form>
         </div>
     </div>
 
-<script src="./js/index.js" type="text/javascript" ></script>
+<script href="/public/js/index.js" type="text/javascript" ></script>
 </body>
 
 </html>
