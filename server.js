@@ -22,7 +22,6 @@ app.use('/api', apiRoutes );
 
 
 
-
 app.listen(PORT, (err) => {
     if (err) throw err;
     console.log(`connected on port ${PORT}`);
