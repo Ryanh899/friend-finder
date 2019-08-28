@@ -17,32 +17,33 @@ module.exports = (express) => {
         return arr.indexOf(num)
     }
     var findDifferences = (arr) => {
-        finalDifference = [];
-        otherDif = [];
+        responseSplit = [];
+        finalDifferences = [];
         valuesArr = [];
         idArr = [];
         let chop = arr.splice(arr.length - 9, arr.length);
         while (arr.length) {
-            finalDifference.push(arr.splice(0, 9));
+            responseSplit.push(arr.splice(0, 9));
         };
-        // console.log(finalDifference);
-        for (var i = 0; i < finalDifference.length; i++) {
-            let num = 0;
-            for (var n = 0; n < finalDifference[i].length; n++) {
-                num += Math.abs(finalDifference[i][n]);
+        for (var i = 0; i < responseSplit.length; i++) {
+            var num = 0;
+            for (var n = 0; n < responseSplit[i].length; n++) {
+                num += Math.abs(responseSplit[i][n]);
             };
-            otherDif.push({
+            finalDifferences.push({
                 pointsOff: num,
-                id: finalDifference.indexOf(finalDifference[i])
+                id: responseSplit.indexOf(responseSplit[i]) + 1
             });
         };
-        test(otherDif, valuesArr, idArr);
-        low = Array.min(valuesArr);
-        testId = valuesArr.indexOf(low) + 1;
-        return {
-            bestMatch: low,
-            id: testId
-        };
+        // console.log(finalDifferences)
+        // test(finalDifferences, valuesArr, idArr);
+        // low = Array.min(valuesArr);
+        // testId = valuesArr.indexOf(low) + 1;
+        // obj = {
+        //     bestMatch: low,
+        //     id: testId
+        // };
+        return finalDifferences; 
     };
     Array.min = function (array) {
         return Math.min.apply(Math, array);
@@ -50,6 +51,7 @@ module.exports = (express) => {
     var test = (useArr, pushArr, id) => {
         for (var i = 0; i < useArr.length; i++) {
             temp = Object.values(useArr[i]);
+            // console.log(temp)
             let pop = temp.pop();
             id.push({
                 id: pop
@@ -57,11 +59,13 @@ module.exports = (express) => {
             pushArr.push(temp[0]);
         };
     };
-
-    var findMatch = () => {
-        responses = [];
-        differences = [];
-        knex.select().table('users')
+    
+    var findMatch = async function () {
+        var responses = [];
+        var differences = [];
+        var final = []; 
+        let promise = new Promise(function (resolve, reject) {
+            knex.select().table('users')
             .then((result) => {
                 var resSpl
                 result.forEach(element => {
@@ -72,19 +76,51 @@ module.exports = (express) => {
                 for (var i = 0; i < responses.length; i++) {
                     let newArr = responses[responses.length - 1];
                     for (var n = 0; n < responses[i].length; n++) {
-                        let num = responses[responses.length - 1][n];
-                        let num2 = responses[i][n]
-                        // console.log(`${num} - ${num2} = ${num - num2}`);
+                        var num = responses[responses.length - 1][n];
+                        var num2 = responses[i][n]
                         differences.push(num - num2);
                     };
+                    // console.log(differences)
                 };
-                // findDifferences(differences); 
-                console.log(findDifferences(differences))
+                resolve(differences)
+                // console.log(differences)
+                
+                // console.log(`in promise findDifferences: ${JSON.stringify(findDifferences(differences))}`)
+                // console.log(findDifferences(differences))
+                // console.log(differences)
+                
             })
             .catch((err) => {
                 if (err) throw err
             });
+            
+        })
+
+        promise.then((value) => {
+           console.log(findDifferences(value)) 
+        })
+
+       
+        
+        // console.log(differences)
+        // console.log(`out of promise findDifferences: ${JSON.stringify(findDifferences(differences))}`)
+        // final.push(findDifferences(differences))
+         
+         
     };
+
+    var displayRoute = (id) => {
+        knex('users').where({
+                id
+            })
+            .select('name', 'picture')
+            .then((resp) => {
+                // console.log(resp)
+            })
+            .catch(err => {
+                if (err) throw err
+            })
+    }
     // add routes
     router.route('/new')
         .post((req, res) => {
@@ -100,7 +136,10 @@ module.exports = (express) => {
             //     .catch((err) => {
             //         if (err) throw err
             //     });
-            findMatch();
+            findMatch()
+            
+            // findMatch()
+            // displayRoute(findMatch().id)
             res.redirect('/')
         });
     var toSend = knex.select().table('users')
