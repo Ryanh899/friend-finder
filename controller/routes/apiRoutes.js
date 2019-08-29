@@ -16,7 +16,7 @@ module.exports = (express) => {
     var getId = (num, arr) => {
         return arr.indexOf(num)
     }
-    var findDifferences = (arr) => {
+    var findDifferences = async (arr) => {
         responseSplit = [];
         finalDifferences = [];
         valuesArr = [];
@@ -35,112 +35,92 @@ module.exports = (express) => {
                 id: responseSplit.indexOf(responseSplit[i]) + 1
             });
         };
-        // console.log(finalDifferences)
-        // test(finalDifferences, valuesArr, idArr);
-        // low = Array.min(valuesArr);
-        // testId = valuesArr.indexOf(low) + 1;
-        // obj = {
-        //     bestMatch: low,
-        //     id: testId
-        // };
-        return finalDifferences; 
+        // console.log(getSmallestDifference(finalDifferences))
+        return getSmallestDifference(finalDifferences);
     };
     Array.min = function (array) {
         return Math.min.apply(Math, array);
     };
-    var test = (useArr, pushArr, id) => {
+    var getSmallestDifference = (useArr) => {
+        let values = [];
+        let ids = [];
         for (var i = 0; i < useArr.length; i++) {
-            temp = Object.values(useArr[i]);
-            // console.log(temp)
-            let pop = temp.pop();
-            id.push({
-                id: pop
-            })
-            pushArr.push(temp[0]);
-        };
+            let objValues = Object.values(useArr[i]);
+            values.push(objValues[0]);
+            ids.push(objValues[1])
+        }
+        return {
+            difference: Array.min(values),
+            id: ids[values.indexOf(Array.min(values))]
+        }
     };
-    
+
     var findMatch = async function () {
         var responses = [];
         var differences = [];
-        var final = []; 
+        var final = [];
         let promise = new Promise(function (resolve, reject) {
             knex.select().table('users')
-            .then((result) => {
-                var resSpl
-                result.forEach(element => {
-                    var resStr = JSON.stringify(element.responses);
-                    resSpl = resStr.split('');
-                    responses.push(resSpl);
-                });
-                for (var i = 0; i < responses.length; i++) {
-                    let newArr = responses[responses.length - 1];
-                    for (var n = 0; n < responses[i].length; n++) {
-                        var num = responses[responses.length - 1][n];
-                        var num2 = responses[i][n]
-                        differences.push(num - num2);
+                .then((result) => {
+                    var resSpl
+                    result.forEach(element => {
+                        var resStr = JSON.stringify(element.responses);
+                        resSpl = resStr.split('');
+                        responses.push(resSpl);
+                    });
+                    for (var i = 0; i < responses.length; i++) {
+                        let newArr = responses[responses.length - 1];
+                        for (var n = 0; n < responses[i].length; n++) {
+                            var num = responses[responses.length - 1][n];
+                            var num2 = responses[i][n]
+                            differences.push(num - num2);
+                        };
                     };
-                    // console.log(differences)
-                };
-                resolve(differences)
-                // console.log(differences)
-                
-                // console.log(`in promise findDifferences: ${JSON.stringify(findDifferences(differences))}`)
-                // console.log(findDifferences(differences))
-                // console.log(differences)
-                
-            })
-            .catch((err) => {
-                if (err) throw err
-            });
-            
+                    resolve(findDifferences(differences))
+                })
+                .catch((err) => {
+                    if (err) throw err
+                });
         })
-
-        promise.then((value) => {
-           console.log(findDifferences(value)) 
-        })
-
-       
-        
-        // console.log(differences)
-        // console.log(`out of promise findDifferences: ${JSON.stringify(findDifferences(differences))}`)
-        // final.push(findDifferences(differences))
-         
-         
+        return promise
     };
 
-    var displayRoute = (id) => {
-        knex('users').where({
-                id
-            })
-            .select('name', 'picture')
-            .then((resp) => {
-                // console.log(resp)
-            })
-            .catch(err => {
-                if (err) throw err
-            })
-    }
-    // add routes
+    var displayRoute = async (id) => {
+        let newPromise = new Promise((resolve, reject) => {
+            knex('users').where({
+                    id
+                })
+                .select('name', 'picture')
+                .then((resp) => {
+                    resolve(resp)
+                })
+                .catch(err => {
+                    if (err) throw err
+                })
+        })
+        return newPromise
+    };
     router.route('/new')
         .post((req, res) => {
             var postArr = Object.values(req.body)
-            // knex('users').insert({
-            //         name: req.body.name,
-            //         picture: req.body.picture,
-            //         responses: toPost(postArr)
-            //     })
-            //     .then(function (result) {
-            //        console.log('ok'); 
-            //     })
-            //     .catch((err) => {
-            //         if (err) throw err
-            //     });
-            findMatch()
-            
-            // findMatch()
-            // displayRoute(findMatch().id)
-            res.redirect('/')
+            knex('users').insert({
+                    name: req.body.name,
+                    picture: req.body.picture,
+                    responses: toPost(postArr)
+                })
+                .then(function (result) {
+                    console.log('ok');
+                })
+                .catch((err) => {
+                    if (err) throw err
+                });
+            findMatch().then((result) => {
+                displayRoute(result.id)
+                    .then((result) => {
+                        // console.log(JSON.stringify(result))
+                        res.status(200).send(result)
+                    })
+            })
         });
     var toSend = knex.select().table('users')
         .then((resp) => {
