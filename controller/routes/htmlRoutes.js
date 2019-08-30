@@ -7,11 +7,11 @@ module.exports = (express) => {
     //routes
     router.route('/')
         .get((req, res) => {
-            res.sendFile(path.join(__dirname + '/../../view/public/home.html'));
+            res.sendFile(path.join(__dirname + '/../../view/home.html'));
         });
     router.route('/survey')
         .get((req, res) => {
-            res.sendFile(path.join(__dirname + '/../../view/public/survey.html'));
+            res.sendFile(path.join(__dirname + '/../../view/survey.html'));
         });
 
     return router; 

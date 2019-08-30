@@ -55,12 +55,12 @@ module.exports = (express) => {
         }
     };
 
-    var findMatch = async function () {
+    var findMatch = function () {
         var responses = [];
         var differences = [];
         var final = [];
-        let promise = new Promise(function (resolve, reject) {
-            knex.select().table('users')
+        return new Promise(function (resolve, reject) {
+            knex('users').select()
                 .then((result) => {
                     var resSpl
                     result.forEach(element => {
@@ -82,45 +82,42 @@ module.exports = (express) => {
                     if (err) throw err
                 });
         })
-        return promise
     };
 
-    var displayRoute = async (id) => {
-        let newPromise = new Promise((resolve, reject) => {
+    var displayRoute = id => {
+        return new Promise((resolve, reject) => {
             knex('users').where({
                     id
                 })
-                .select('name', 'picture')
-                .then((resp) => {
-                    resolve(resp)
-                })
-                .catch(err => {
-                    if (err) throw err
-                })
+            .select('name', 'picture')
+            .then((resp) => {
+                resolve(resp)
+            })
+            .catch(err => {
+                throw err
+            })
         })
-        return newPromise
     };
-    router.route('/new')
-        .post((req, res) => {
+    router.post('/new', (req, res) => {
             var postArr = Object.values(req.body)
             knex('users').insert({
-                    name: req.body.name,
+                    name: req.body.name, 
                     picture: req.body.picture,
                     responses: toPost(postArr)
                 })
                 .then(function (result) {
-                    console.log('ok');
+                   return findMatch()
+                })
+                .then((result) => {
+                    return displayRoute(result.id)   
+                })
+                .then((result) => {
+                    // console.log(JSON.stringify(result))
+                    res.status(200).send(result)
                 })
                 .catch((err) => {
-                    if (err) throw err
+                    throw err.message
                 });
-            findMatch().then((result) => {
-                displayRoute(result.id)
-                    .then((result) => {
-                        // console.log(JSON.stringify(result))
-                        res.status(200).send(result)
-                    })
-            })
         });
     var toSend = knex.select().table('users')
         .then((resp) => {

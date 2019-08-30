@@ -9,8 +9,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); 
 
-app.use(express.static(path.join(__dirname + '/public'))); 
-
+app.use(express.static(path.join(__dirname + '/view/'))); 
+console.log(__dirname)
 //require and use html routes
 const htmlRoutes = require('./controller/routes/htmlRoutes')(express); 
 app.use('/', htmlRoutes ); 
