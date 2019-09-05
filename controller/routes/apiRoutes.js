@@ -8,10 +8,18 @@ module.exports = (express) => {
     var router = express.Router();
 
     var toPost = (arr) => {
-        for (var i = 0; i < arr.length; i++) {
-            var firstTwo = arr.splice(0, 2);
-            return arr.join('')
-        }
+        console.log('--------------------')
+        console.log(arr)
+        
+        arr.sort(function(a, b){
+            return a.question - b.question
+        });
+        console.log('--------------------')
+        let result = arr.map(n => n.answer ).join('')
+        console.log(arr)
+        console.log('--------------------')
+        console.log( Number(result))
+        return Number(result)
     };
     var getId = (num, arr) => {
         return arr.indexOf(num)
@@ -99,11 +107,12 @@ module.exports = (express) => {
         })
     };
     router.post('/new', (req, res) => {
-            var postArr = Object.values(req.body)
+            // var postArr = Object.values(req.body)
+            console.log(req.body.responses)
             knex('users').insert({
                     name: req.body.name, 
                     picture: req.body.picture,
-                    responses: toPost(postArr)
+                    responses: toPost(req.body.responses)
                 })
                 .then(function (result) {
                    return findMatch()
@@ -112,7 +121,7 @@ module.exports = (express) => {
                     return displayRoute(result.id)   
                 })
                 .then((result) => {
-                    // console.log(JSON.stringify(result))
+                    // console.log(result)
                     res.status(200).send(result)
                 })
                 .catch((err) => {
