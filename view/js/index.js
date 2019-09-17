@@ -32,24 +32,23 @@ $('#submit').on('click', function (e) {
     data.responses = answers
     console.log(data)
 
-    // $.ajax({
-    //     type: 'POST',
-    //     data: JSON.stringify(data),
-    //     contentType: 'application/json',
-    //     url: 'http://localhost:3000/api/new',						
-    //     success: function(data) {
-    //         console.log('success');
-    //         console.log(JSON.stringify(data));
-    //         console.log(data); 
-    //         console.log(data[0].name)
+    $.ajax({
+        type: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        url: '/api/new',						
+        success: function(data) {
+            console.log('success');
+            console.log(JSON.stringify(data));
+            console.log(data); 
+            console.log(data[0].name)
 
-    //         $('#matchContainer').append(`<h2>${data[0].name}</h2>
-    //         <img src="${data[0].picture}" alt="No picture found"  >`)
-    //     }
-    // });
-    
+            $('#matchContainer').append(`<h2>${data[0].name}</h2>
+            <img src="${data[0].picture}" alt="No picture found"  >`)
+        }
+    });
 });
 
 $('#routeHome').on('click', () => {
-    location.href = 'http://localhost:3000'
+    location.href = '/'
 })
