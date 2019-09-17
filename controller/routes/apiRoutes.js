@@ -8,17 +8,11 @@ module.exports = (express) => {
     var router = express.Router();
 
     var toPost = (arr) => {
-        console.log('--------------------')
-        console.log(arr)
         
         arr.sort(function(a, b){
             return a.question - b.question
         });
-        console.log('--------------------')
         let result = arr.map(n => n.answer ).join('')
-        console.log(arr)
-        console.log('--------------------')
-        console.log( Number(result))
         return Number(result)
     };
     var getId = (num, arr) => {
@@ -40,10 +34,10 @@ module.exports = (express) => {
             };
             finalDifferences.push({
                 pointsOff: num,
-                id: responseSplit.indexOf(responseSplit[i]) + 1
+                id: responseSplit.indexOf(responseSplit[i]) * 10 + 2 
             });
         };
-        // console.log(getSmallestDifference(finalDifferences))
+
         return getSmallestDifference(finalDifferences);
     };
     Array.min = function (array) {
@@ -94,21 +88,18 @@ module.exports = (express) => {
 
     var displayRoute = id => {
         return new Promise((resolve, reject) => {
-            knex('users').where({
-                    id
-                })
+            knex('users').where('id', Number(id.id))
             .select('name', 'picture')
             .then((resp) => {
                 resolve(resp)
             })
             .catch(err => {
-                throw err
+                console.log( {err: err, message: err.message} )
             })
         })
     };
     router.post('/new', (req, res) => {
             // var postArr = Object.values(req.body)
-            console.log(req.body.responses)
             knex('users').insert({
                     name: req.body.name, 
                     picture: req.body.picture,
@@ -117,15 +108,15 @@ module.exports = (express) => {
                 .then(function (result) {
                    return findMatch()
                 })
-                .then((result) => {
-                    return displayRoute(result.id)   
+                .then(function (result) {
+                    let id = displayRoute(result) 
+                    return id   
                 })
-                .then((result) => {
-                    // console.log(result)
+                .then(function (result) {
                     res.status(200).send(result)
                 })
                 .catch((err) => {
-                    throw err.message
+                    res.status(400).json( {err: err, message: err.message} );  
                 });
         });
     var toSend = knex.select().table('users')
@@ -139,6 +130,5 @@ module.exports = (express) => {
         .get((req, res) => {
             res.json(toSend)
         });
-
     return router;
 };

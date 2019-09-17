@@ -5,19 +5,20 @@ module.exports = {
   development: {
     client: 'mysql',
     connection: {
-        host: '127.0.0.1',
-        user: 'root',
-        password: 'root',
-        database: 'express_hw'
+        host: 'us-cdbr-iron-east-02.cleardb.net',
+        user: 'b2fee4fd1cb4cc',
+        password: '8b6ecf20',
+        database: 'heroku_bc045dbfeaec5f2'
       }
   },
 
   staging: {
     client: 'mysql',
     connection: {
-      database: 'users',
-      user:     'root',
-      password: 'root'
+      host: 'us-cdbr-iron-east-02.cleardb.net',
+      user: 'b2fee4fd1cb4cc',
+      password: '8b6ecf20',
+      database: 'heroku_bc045dbfeaec5f2'
     },
     pool: {
       min: 2,
@@ -31,9 +32,10 @@ module.exports = {
   production: {
     client: 'mysql',
     connection: {
-      database: 'users',
-      user:     'root',
-      password: 'root'
+      host: 'us-cdbr-iron-east-02.cleardb.net',
+      user: 'b2fee4fd1cb4cc',
+      password: '8b6ecf20',
+      database: 'heroku_bc045dbfeaec5f2'
     },
     pool: {
       min: 2,
